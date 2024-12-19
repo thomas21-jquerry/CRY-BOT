@@ -10,7 +10,7 @@ import { CONTEXT } from '../context/context';
 
 const index = () => {
   const {TRADING_BOT} = useContext(CONTEXT);
-  const [activeComponent, setActiveComponent] = useState("Home");
+  let [activeComponent, setActiveComponent] = useState("home");
   const [membershipType, setMemebershipType] = useState("Premium");
   const [authBackendId, setAuthBackendId] = useState("");
   const [networks, setNetworks] = useState({});
@@ -29,7 +29,7 @@ const index = () => {
     <Preloader />
     {
       activeComponent = "Signup" ? (
-        <Signup axios={axios} setActiveComponent={setActiveComponent} />
+        <Signup axios={axios} setActiveComponent={setActiveComponent} notifyError={notifyError} notifySuccess={notifySuccess} />
       ):("")
     }
   </div>;

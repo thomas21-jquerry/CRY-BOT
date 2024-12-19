@@ -2,13 +2,13 @@ const jwt = require('jsonwebtoken');
 const User = require('../Model/userModel');
 
 const signToken = (id)=>{
-    jwt.sign({id}, process.env.JWT_SECRET, {
+    return jwt.sign({id}, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN,
     });
 };
 
-const createSendToken = (user, statusCode, req, res)=>{
-    const token = signToken(user._id);
+const createSendToken = async(user, statusCode, req, res)=>{
+    const token = await signToken(user._id);
 
     res.cookie("jwt", token, {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
@@ -17,7 +17,6 @@ const createSendToken = (user, statusCode, req, res)=>{
     });
 
     user.password = undefined;
-
     res.status(statusCode).json({
         status: "success",
         token,
@@ -28,7 +27,7 @@ const createSendToken = (user, statusCode, req, res)=>{
 };
 
 exports.signUp = async(req, res, next) => {
-    const newUser = User.create({
+    const newUser = await User.create({
         name: req.body.name,
         email: req.body.email,
         password: req.body.password,
