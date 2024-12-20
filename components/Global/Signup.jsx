@@ -30,7 +30,7 @@ const Signup = ({axios, setActiveComponent, notifyError, notifySuccess}) => {
           passwordConfirm: user.confirmPassword,
         }
       })
-      
+      console.log(response)
       if(response.data.status == "success"){
         notifySuccess("Account Created Successfully");
         localStorage.setItem(
@@ -53,7 +53,7 @@ const Signup = ({axios, setActiveComponent, notifyError, notifySuccess}) => {
       console.log(error)
     }
   }
-  console.log(user);
+
   return (
     <div className='techwave_fn_sign'>
       <div className='sign__content'>
@@ -62,7 +62,7 @@ const Signup = ({axios, setActiveComponent, notifyError, notifySuccess}) => {
         </h1>
         <form className='login'>
           <div className='form__content'>
-            <div className='form_title'>Sign Up</div>
+            <div className='form__title'>Sign Up</div>
             <div className='form__username'>
               <label htmlFor="user_login">Name</label>
               <input type="text" className='input' onChange={(e)=> handleFormFieldChange("name", e)} />
@@ -88,7 +88,7 @@ const Signup = ({axios, setActiveComponent, notifyError, notifySuccess}) => {
         </form>
 
         <div className='sign__desc'>
-          <p>Not a member?
+          <p>Already A Member?
             <a onClick={(e)=>setActiveComponent("Login")}>Login</a>
           </p>
         </div>

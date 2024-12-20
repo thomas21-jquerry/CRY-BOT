@@ -2,29 +2,36 @@ const mongoose = require('mongoose');
 const next = require("next");
 const dotenv = require("dotenv");
 
-const dev = process.env.NODE_ENV != "production";
-const nextServer = next({dev});
+const dev = process.env.NODE_ENV !== "production"; // If it's not production, run in development mode
+const nextServer = next({ dev }); // Initialize Next.js server
+const handle = nextServer.getRequestHandler(); // Get the request handler from Next.js
+dotenv.config({ path: "./config.env" }); // Load environment variables
+const app = require("./app"); // Import your Express app
 
-const handle = nextServer.getRequestHandler();
-dotenv.config({path: "./config.env"})
-const app = require("./app");
-
+// MongoDB connection
 const DB = process.env.DATABASE;
 
 mongoose.connect(DB, {
     useNewUrlParser: true,
-    userCreateIndex: true,
-    useFindAndModify: false
-}).then(()=>{console.log("Database connected successfully!")});
+    useUnifiedTopology: true,
+}).then(() => {
+    console.log("Database connected successfully!");
+}).catch(err => {
+    console.error("MongoDB connection error:", err);
+});
 
-const port = 3000;
+// Set the port for the server to listen on
+const port = process.env.PORT || 3000;
 
-nextServer.prepare().then(()=>{
-    app.get("*", (req,res)=>{
-        return handle(req,res);
-    })
-})
+// Prepare and start the Next.js app
+nextServer.prepare().then(() => {
+    // Handling all requests with Next.js request handler
+    app.get("*", (req, res) => {
+        return handle(req, res);
+    });
 
-app.listen(port, ()=>{
-    console.log(`App running on port ${port} ...`)
-})
+    // Start the Express app to listen for incoming requests
+    app.listen(port, () => {
+        console.log(`App running on port ${port} ...`);
+    });
+});

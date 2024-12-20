@@ -36,26 +36,46 @@ exports.signUp = async(req, res, next) => {
     createSendToken(newUser, 201, req, res)
 };
 
-exports.login = async(req, res, next)=>{
-    const {email, password} = req.body;
+exports.login = async (req, res, next) => {
+    const { email, password } = req.body; 
 
-    if(!email || !password){
-        res.status(400).json({
+    if (!email || !password) {
+        return res.status(400).json({
             status: 'fail',
-            message: 'Please provide email and password'
+            message: 'Please provide email and password',
         });
     }
 
-    const user = await User.findOne({email}).select("+password");
-    if(!user || !user.correctPassword(password, user.password))  {
-        res.status(401).json({
+    let user;
+    try {
+        user  = await User.findOne({ email }).select('+password');  // Include 'password' to validate login
+        if (user) {
+            console.log('User found:', user);
+        } else {
+            console.log("User not found");
+        }
+    } catch (error) {
+        console.error("Error in database query:", error);  // Logging database errors
+        return res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+        });
+    }
+    user = user.getQuery();
+    // Check if user exists and if password matches
+    if (!user || !user.correctPassword(password, user.password)) {
+        console.log("fail from server");
+        return res.status(401).json({
             status: 'fail',
             message: "Incorrect email or password",
         });
     }
 
+    console.log("hi");
+
     createSendToken(user, 200, req, res);
-}
+};
+
 
 exports.buyMembership = async(req, res, next)=>{
     const updatedUser = await User.findByIdAndUpdate(
